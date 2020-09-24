@@ -2,46 +2,56 @@ import re
 import jieba
 from gensim import corpora,models
 from gensim.similarities import Similarity
-#处理原始文档
-orig= open("D:\\pythonstudy\\test\\orig.txt",'r',encoding='UTF-8')
-orig_text=orig.read()#读取原始文档
-print(orig_text)
-orig.close()
-orig_result = re.sub(r'[^\u4e00-\u9fa5,A-Za-z0-9]', "",orig_text)#只保留中文、英文和数字
-print(orig_result)
-orig_cut_text=jieba.lcut(orig_result)#分割词语
-print(orig_cut_text)
-dictionary=corpora.Dictionary([orig_cut_text])#创建字典，为单词编号
-print(dictionary)
-print(dictionary.token2id)
-  
-#处理对比文档
 def gain():
     filename = input("please input filename: 形式如D:\\pythonstudy\\test\\orig_0.8_add.txt")
-    test=open(filename,'r',encoding='UTF-8')
-    a =test.read()
-    print('%s' % filename)
-#print(test_text)
+    try:
+        test=open(filename,'r',encoding='UTF-8')
+        a =test.read()
+    except FileNotFoundError:
+        print("文件输入路径有误")
+    #测试print('%s' % filename)
+    #测试print(test_text)
     test.close()
     return a
-   
-  
-  
-test_text=gain()#读取处理文档
-test_result = re.sub(r'[^\u4e00-\u9fa5,A-Za-z0-9]', "",test_text)#只保留中文、英文和数字
-print(test_result)
-test_cut_text=jieba.lcut(test_result)#分割词语
-print(test_cut_text)
-new_vecs = [dictionary.doc2bow(test_cut_text)]
-print(new_vecs)
 
-#建立语料库
-corpus = [dictionary.doc2bow(text) for text in [orig_cut_text]]
-print(corpus)
+def text_tiqu(text):
+    q=re.sub(r'[^\u4e00-\u9fa5,A-Za-z0-9]', "",text)
+    return q
 
-similarity = Similarity('-Similarity-index', corpus,len(dictionary.token2id))# 转换类型，切片保留8位小数
-a = similarity[new_vecs]
-b = a[0]
-b = str(b).split('.')[0] + '.' + str(a).split('.')[1][:8]
-print("相似的计算结果：%s" % b)
+def main():
+#处理原始文档
+    orig= open("D:\\pythonstudy\\test\\orig.txt",'r',encoding='UTF-8')
+    orig_text=orig.read()#读取原始文档
+    #测试print(orig_text)
+    orig.close()
+    orig_result = text_tiqu(orig_text)#只保留中文、英文和数字
+    #测试print(orig_result)
+    orig_cut_text=jieba.lcut(orig_result)#分割词语
+    #测试print(orig_cut_text)
+    dictionary=corpora.Dictionary([orig_cut_text])#创建字典，为单词编号
+    #测试print(dictionary)
+    #测试print(dictionary.token2id)
+    
+#处理对比文档  
+    test_text=gain()#读取处理文档
+    test_result =  text_tiqu(test_text)#只保留中文、英文和数字
+    #测试print(test_result)
+    test_cut_text=jieba.lcut(test_result)#分割词语
+    #测试print(test_cut_text)
+    new_vecs = [dictionary.doc2bow(test_cut_text)]
+    # 测试print(new_vecs)
 
+    #建立语料库
+    corpus = [dictionary.doc2bow(text) for text in [orig_cut_text]]
+    #测试print(corpus)
+
+    similarity = Similarity('-Similarity-index', corpus,len(dictionary.token2id))# 转换类型，切片保留8位小数
+    a = similarity[new_vecs]
+    b = a[0]
+    b = str(b).split('.')[0] + '.' + str(a).split('.')[1][:2]
+    f = open(r"D:\pythonstudy\test\output.txt",'a')
+    f.write(b)   #将字符串写入文件中
+    f.write("\n")                 #换行    
+    print("相似的计算结果：%s" % b)
+if __name__ == "__main__":
+    main()
