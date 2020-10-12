@@ -18,7 +18,7 @@ class construction:
     def construct_fraction(self, num_length):
         denominator = randint(2, num_length)
         numerator = randint(1, denominator - 1)
-        first_num = randint(0, 1)
+        first_num = randint(0, num_length - 1)
         fraction = str(Fraction(numerator, denominator))
         if first_num != 0:
             fraction = str(first_num) + "'" + fraction
